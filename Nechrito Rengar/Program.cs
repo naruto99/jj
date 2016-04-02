@@ -12,6 +12,7 @@ namespace Nechrito_Rengar
 {
     class Program : Logic
     {
+        private static bool _ultiCasted;
         public static readonly int[] BlueSmite = { 3706, 1400, 1401, 1402, 1403 };
 
         public static readonly int[] RedSmite = { 3715, 1415, 1414, 1413, 1412 };
@@ -29,11 +30,42 @@ namespace Nechrito_Rengar
             MenuConfig.LoadMenu();
             Spells.Initialise();
             Game.OnUpdate += OnTick;
+            Game.OnTick += Game_OnTick;
             Obj_AI_Base.OnProcessSpellCast += OnDoCast;
             Obj_AI_Base.OnProcessSpellCast += OnDoCastLc;
+            Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnSpellCast;
             Drawing.OnDraw += Drawing_OnDraw;
        
 
+        }
+
+        static void Game_OnTick(EventArgs args)
+        {
+            if (_ultiCasted && !RengarHasUlti)
+            {
+                _ultiCasted = false;
+            }
+            if (MenuConfig.BurstAutoMode && _ultiCasted && !MenuConfig.BurstModeActive)
+            {
+                MenuConfig.Config["Burst.Active"].Cast<KeyBind>().CurrentValue = true;
+            }
+        }
+
+        static void Obj_AI_Base_OnSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        {
+            if (sender.IsMe)
+            {
+                var spellName = args.SData.Name.ToLower();
+
+                if (spellName == "rengarr")
+                {
+                    _ultiCasted = true;
+                }
+                if (spellName == "rengarq")
+                {
+                    Orbwalker.ResetAutoAttack();
+                }
+            }
         }
         private static void OnTick(EventArgs args)
         {
