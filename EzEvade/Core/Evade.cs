@@ -18,7 +18,7 @@ namespace ezEvade
     {
         public static AIHeroClient myHero
         {
-            get { return ObjectManager.Player; }
+            get { return EloBuddy.ObjectManager.Player; }
         }
 
         public static SpellDetector spellDetector;
@@ -107,7 +107,7 @@ namespace ezEvade
                 SpellDetector.OnProcessDetectedSpells += SpellDetector_OnProcessDetectedSpells;
                 Orbwalker.OnPreAttack += Orbwalking_BeforeAttack;
 
-                Chat.Print("ezEvade | Ported by Rexy",Color.Aqua);
+                Chat.Print("ezEvade | Ported by Rexy",System.Drawing.Color.Aqua);
 
                 menu = MainMenu.AddMenu("ezEvade", "ezEvade");
                 ObjectCache.menuCache.AddMenuToCache(menu);
