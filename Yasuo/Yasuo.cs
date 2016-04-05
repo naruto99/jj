@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using BrianSharp.Common;
-using BrianSharp.Evade;
 using EloBuddy;
 using EloBuddy.SDK;
 using EloBuddy.SDK.Enumerations;
@@ -13,7 +12,7 @@ using SharpDX;
 using Color = System.Drawing.Color;
 using SkillShotType = EloBuddy.SDK.Enumerations.SkillShotType;
 
-namespace BrianSharp.Plugin
+namespace BrianSharp
 {
     internal class Yasuo : Helper
     {
@@ -25,12 +24,8 @@ namespace BrianSharp.Plugin
 
         public static IsSafeResult IsSafePoint(Vector2 point)
         {
-            var result = new IsSafeResult {SkillshotList = new List<Skillshot>()};
-            foreach (var skillshot in
-                SkillshotDetector.DetectedSkillshots.Where(i => i.Evade && !i.IsSafePoint(point)))
-            {
-                result.SkillshotList.Add(skillshot);
-            }
+            var result = new IsSafeResult {SkillshotList = new List<Spell.Skillshot>()};
+            
             result.IsSafe = result.SkillshotList.Count == 0;
             return result;
         }
@@ -41,133 +36,154 @@ namespace BrianSharp.Plugin
 
             public bool IsSafe;
 
-            public List<Skillshot> SkillshotList;
+            public List<Spell.Skillshot> SkillshotList;
 
             #endregion
         }
 
+        public static bool CastQCir(Obj_AI_Base target)
+        {
+            return target.IsValidTarget(QCirWidthMin - target.BoundingRadius) && _q.Cast(Game.CursorPos);
+        }
+
         #region Constructors and Destructors
 
-        private static Spell.Skillshot Q, Q2;
-        private static Spell.SpellBase W;
-        private static Spell.Targeted E;
-        private static Spell.Active R;
+        private static Spell.Skillshot _q, _q2;
+        private static Spell.Targeted _e;
+        private static Spell.Active _r;
 
-        private static Menu comboMenu,
-            harassMenu,
-            clearMenu,
-            lastHitMenu,
-            fleeMenu,
-            miscMenu,
-            killStealMenu,
-            interruptMenu,
-            drawMenu;
+        public static SpellSlot Flash, Smite, Ignite;
+
+
+        public static Item Tiamat, Hydra, Youmuu, Zhonya, Seraph, Sheen, Iceborn, Trinity;
+        public static Menu Menu;
 
         public static void Yasuoo()
         {
-            Q = new Spell.Skillshot(SpellSlot.Q, 500, SkillShotType.Linear, (int) GetQDelay,
-                int.MaxValue, 20);
-            Q2 = new Spell.Skillshot(SpellSlot.Q, 1100, SkillShotType.Linear, (int) GetQ2Delay,
+            _q = new Spell.Skillshot(SpellSlot.Q, 500, SkillShotType.Linear);
+            _q2 = new Spell.Skillshot(SpellSlot.Q, 1100, SkillShotType.Linear, (int) GetQ2Delay,
                 1500, 90);
-            E = new Spell.Targeted(SpellSlot.E, 475);
-            R = new Spell.Active(SpellSlot.R, 1300);
+            _e = new Spell.Targeted(SpellSlot.E, 475);
+            _r = new Spell.Active(SpellSlot.R, 1300);
 
-            Menu = MainMenu.AddMenu("YasuoYasuoYasuo", "Yasuo");
+            Menu = MainMenu.AddMenu("YasuoXD", "Yasuo");
             Menu.AddLabel("Another port from Rexy");
             Menu.AddLabel("Huehuehuehuehuehue");
 
 
-            comboMenu = Menu.AddSubMenu("Combo", "Combo");
-            AddBool(comboMenu, "Q", "Use Q");
-            AddBool(comboMenu, "QStack", "-> Stack Q While Gap (E Gap Must On)", false);
-            AddBool(comboMenu, "E", "Use E");
-            AddBool(comboMenu, "EDmg", "-> Q3 Circle (Q Must On)");
-            AddBool(comboMenu, "EGap", "-> Gap Closer");
-            AddSlider(comboMenu, "EGapRange", "-> If Enemy Not In", 300, 1, 475);
-            AddBool(comboMenu, "EGapTower", "-> Under Tower", false);
-            AddBool(comboMenu, "R", "Use R");
-            AddBool(comboMenu, "RDelay", "-> Delay");
-            AddSlider(comboMenu, "RHpU", "-> If Enemy Hp <", 60);
-            AddSlider(comboMenu, "RCountA", "-> Or Enemy >=", 2, 1, 5);
+            Menu.AddLabel("Combo");
+            AddBool(Menu, "Q", "Use Q");
+            AddBool(Menu, "QStack", "-> Stack Q While Gap (E Gap Must On)", false);
+            AddBool(Menu, "E", "Use E");
+            AddBool(Menu, "EDmg", "-> Q3 Circle (Q Must On)");
+            AddBool(Menu, "EGap", "-> Gap Closer");
+            AddSlider(Menu, "EGapRange", "-> If Enemy Not In", 300, 1, 475);
+            AddBool(Menu, "EGapTower", "-> Under Tower", false);
+            AddBool(Menu, "R", "Use R");
+            AddBool(Menu, "RDelay", "-> Delay");
+            AddSlider(Menu, "RHpU", "-> If Enemy Hp <", 60);
+            AddSlider(Menu, "RCountA", "-> Or Enemy >=", 2, 1, 5);
 
-            harassMenu = Menu.AddSubMenu("Harass", "Harass");
-            AddKeybind(harassMenu, "AutoQ", "Auto Q", 'H', KeyBind.BindTypes.PressToggle, true);
-            AddBool(harassMenu, "AutoQ3", "-> Use Q3", false);
-            AddBool(harassMenu, "AutoQTower", "-> Under Tower", false);
-            AddBool(harassMenu, "Q", "Use Q");
-            AddBool(harassMenu, "Q3", "-> Use Q3");
-            AddBool(harassMenu, "QTower", "-> Under Tower");
-            AddBool(harassMenu, "QLastHit", "-> Last Hit (Q1/Q2)");
-            clearMenu = Menu.AddSubMenu("Clear", "Clear");
+            Menu.AddLabel("Harass");
+            AddBool(Menu, "HarQ", "Use Q");
+            AddBool(Menu, "HarQ3", "-> Use Q3");
+            AddBool(Menu, "HarQTower", "-> Under Tower");
+            AddBool(Menu, "HarQLastHit", "-> Last Hit (Q1/Q2)");
+            
 
-            AddBool(clearMenu, "Q", "Use Q");
-            AddBool(clearMenu, "Q3", "-> Use Q3");
-            AddBool(clearMenu, "E", "Use E");
-            AddBool(clearMenu, "ETower", "-> Under Tower", false);
-            AddBool(clearMenu, "Item", "Use Tiamat/Hydra Item");
+            Menu.AddLabel("Clear");
+            AddBool(Menu, "ClQ", "Use Q");
+            AddBool(Menu, "ClQ3", "-> Use Q3");
+            AddBool(Menu, "ClE", "Use E");
+            AddBool(Menu, "ClETower", "-> Under Tower", false);
+            AddBool(Menu, "ClItem", "Use Tiamat/Hydra Item");
 
-            lastHitMenu = Menu.AddSubMenu("Last Hit", "LastHit");
-            AddBool(lastHitMenu, "Q", "Use Q");
-            AddBool(lastHitMenu, "Q3", "-> Use Q3", false);
-            AddBool(lastHitMenu, "E", "Use E");
-            AddBool(lastHitMenu, "ETower", "-> Under Tower", false);
+            Menu.AddLabel("Last Hit");
+            AddBool(Menu, "LhQ", "Use Q");
+            AddBool(Menu, "LhQ3", "-> Use Q3", false);
+            AddBool(Menu, "LhE", "Use E");
+            AddBool(Menu, "LhETower", "-> Under Tower", false);
 
-            fleeMenu = Menu.AddSubMenu("Flee", "Flee");
+            Menu.AddLabel("Flee");
 
-            AddBool(fleeMenu, "E", "Use E");
-            AddBool(fleeMenu, "EStackQ", "-> Stack Q While Dashing");
+            AddBool(Menu, "FlE", "Use E");
+            AddBool(Menu, "FlEStackQ", "-> Stack Q While Dashing");
 
-            killStealMenu = Menu.AddSubMenu("Kill Steal", "KillSteal");
+            Menu.AddLabel("Draw");
 
-            AddBool(killStealMenu, "Q", "Use Q");
-            AddBool(killStealMenu, "E", "Use E");
-            AddBool(killStealMenu, "R", "Use R");
-            AddBool(killStealMenu, "Ignite", "Use Ignite");
+            AddBool(Menu, "DrQ", "Q Range", false);
+            AddBool(Menu, "DrE", "E Range", false);
+            AddBool(Menu, "DrR", "R Range", false);
 
-            miscMenu = Menu.AddSubMenu("Misc", "Misc");
+            Tiamat = new Item(ItemId.Tiamat_Melee_Only);
+            Hydra = new Item(ItemId.Ravenous_Hydra_Melee_Only);
+            Youmuu = new Item(ItemId.Youmuus_Ghostblade);
+            Zhonya = new Item(ItemId.Zhonyas_Hourglass);
+            Seraph = new Item(ItemId.Seraphs_Embrace);
+            Sheen = new Item(ItemId.Sheen);
+            Iceborn = new Item(ItemId.Iceborn_Gauntlet);
+            Trinity = new Item(ItemId.Trinity_Force);
+            Flash = Player.GetSpellSlotFromName("summonerflash");
+            foreach (var spell in
+                Player.Spellbook.Spells.Where(
+                    i =>
+                        i.Name.ToLower().Contains("smite")
+                        && (i.Slot == SpellSlot.Summoner1 || i.Slot == SpellSlot.Summoner2)))
+            {
+                Smite = spell.Slot;
+            }
+            Ignite = Player.GetSpellSlotFromName("summonerdot");
 
-            AddKeybind(miscMenu, "StackQ", "Auto Stack Q", 'Z', KeyBind.BindTypes.PressToggle);
-            AddBool(miscMenu, "StackQDraw", "-> Draw Text");
 
-            drawMenu = Menu.AddSubMenu("Draw", "Draw");
-
-            AddBool(drawMenu, "Q", "Q Range", false);
-            AddBool(drawMenu, "E", "E Range", false);
-            AddBool(drawMenu, "R", "R Range", false);
-
-            Game.OnUpdate += OnUpdate;
+            Game.OnUpdate += Game_OnUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
-            Interrupter.OnInterruptableSpell += OnPossibleToInterrupt;
         }
 
-        private static void Drawing_OnDraw(EventArgs args)
+        static void Drawing_OnDraw(EventArgs args)
         {
             if (Player.IsDead)
             {
                 return;
             }
-            if (miscMenu["StackQ"].Cast<KeyBind>().CurrentValue && miscMenu["StackQDraw"].Cast<CheckBox>().CurrentValue)
+            if (Menu["DrQ"].Cast<CheckBox>().CurrentValue)
             {
-                var pos = Drawing.WorldToScreen(Player.Position);
-                Drawing.DrawText(pos.X, pos.Y, Color.Orange, "Auto Stack Q");
+                Drawing.DrawCircle(Player.Position,_e.Range,Color.White);
             }
-            if (drawMenu["Q"].Cast<CheckBox>().CurrentValue && Q.Level > 0)
+            if (Menu["DrE"].Cast<CheckBox>().CurrentValue)
             {
-                Drawing.DrawCircle(
-                    Player.Position,
-                    Player.IsDashing() ? QCirWidth : (!HaveQ3 ? Q : Q2).Range,
-                    Q.IsReady() ? Color.Green : Color.Red);
+                Drawing.DrawCircle(Player.Position, _e.Range, Color.White);
             }
-            if (drawMenu["E"].Cast<CheckBox>().CurrentValue && E.Level > 0)
-            {
-                Drawing.DrawCircle(Player.Position, E.Range, E.IsReady() ? Color.Green : Color.Red);
-            }
-            if (drawMenu["R"].Cast<CheckBox>().CurrentValue && R.Level > 0)
-            {
-                Drawing.DrawCircle(Player.Position, R.Range, R.IsReady() ? Color.Green : Color.Red);
+           if (Menu["DrR"].Cast<CheckBox>().CurrentValue)
+{
+                Drawing.DrawCircle(Player.Position, _r.Range,Color.White);
             }
         }
 
+        static void Game_OnUpdate(EventArgs args)
+        {
+            if (Player.IsDead || MenuGUI.IsChatOpen || Player.IsRecalling())
+            {
+                return;
+            }
+            switch (Orbwalker.ActiveModesFlags)
+            {
+                case Orbwalker.ActiveModes.Combo:
+                    Fight();
+                    break;
+                case Orbwalker.ActiveModes.Harass:
+                    Fight();
+                    break;
+                case Orbwalker.ActiveModes.LaneClear:
+                    Clear();
+                    break;
+                case Orbwalker.ActiveModes.LastHit:
+                    LastHit();
+                    break;
+                case Orbwalker.ActiveModes.Flee:
+                    Flee();
+                    break;
+            }
+        }
         #endregion
 
         #region Properties
@@ -177,22 +193,17 @@ namespace BrianSharp.Plugin
             get { return 0.5f*(1 - Math.Min((Player.AttackSpeedMod - 1)*0.58f, 0.66f)); }
         }
 
-        private static float GetQDelay
-        {
-            get { return 0.4f*(1 - Math.Min((Player.AttackSpeedMod - 1)*0.58f, 0.66f)); }
-        }
-
         private static bool HaveQ3
         {
             get { return Player.HasBuff("YasuoQ3W"); }
         }
 
-        private static AIHeroClient QCirTarget
+        public static AIHeroClient QCirTarget
         {
             get
             {
-                var pos = Player.GetDashInfo().EndPos;
-                var target = TargetSelector.GetTarget(QCirWidth, DamageType.Physical, pos);
+                var pos = Player.GetDashInfo().EndPos.To2D();
+                var target = TargetSelector.GetTarget(QCirWidth, DamageType.Physical);
                 return target != null && Player.Distance(pos) < 150 ? target : null;
             }
         }
@@ -200,22 +211,6 @@ namespace BrianSharp.Plugin
         #endregion
 
         #region Methods
-
-        private static void AutoQ()
-        {
-            if (!harassMenu["AutoQ"].Cast<CheckBox>().CurrentValue || Player.IsDashing()
-                || (HaveQ3 && !harassMenu["AutoQ3"].Cast<CheckBox>().CurrentValue)
-                || (UnderTower(Player.ServerPosition) && !harassMenu["AutoQTower"].Cast<CheckBox>().CurrentValue))
-            {
-                return;
-            }
-            var target = TargetSelector.GetTarget(!HaveQ3 ? QRange : Q2Range, DamageType.Physical);
-            if (target == null)
-            {
-                return;
-            }
-            (!HaveQ3 ? Q : Q2).Cast(target);
-        }
 
         private static bool CanCastE(Obj_AI_Base target)
         {
@@ -227,42 +222,37 @@ namespace BrianSharp.Plugin
             return target.HasBuffOfType(BuffType.Knockup) || target.HasBuffOfType(BuffType.Knockback);
         }
 
-        private static bool CastQCir(Obj_AI_Base target)
-        {
-            return target.IsValidTarget(QCirWidthMin - target.BoundingRadius) && Q.Cast(Game.CursorPos);
-        }
-
         private static void Clear()
         {
-            if (clearMenu["E"].Cast<CheckBox>().CurrentValue && E.IsReady())
+            if (Menu["ClE"].Cast<CheckBox>().CurrentValue && _e.IsReady())
             {
                 var minionObj =
                     EntityManager.MinionsAndMonsters.Get(EntityManager.MinionsAndMonsters.EntityType.Both,
-                        EntityManager.UnitTeam.Enemy, Player.Position, E.Range)
+                        EntityManager.UnitTeam.Enemy, Player.Position, _e.Range)
                         .Where(
                             i =>
                                 CanCastE(i) &&
-                                (!UnderTower(PosAfterE(i)) || clearMenu["ETower"].Cast<CheckBox>().CurrentValue))
+                                (!UnderTower(PosAfterE(i)) || Menu["ClETower"].Cast<CheckBox>().CurrentValue))
                         .ToList();
 
                 if (minionObj.Any())
                 {
                     var obj = minionObj.FirstOrDefault(i => CanKill(i, GetEDmg(i)));
-                    if (obj == null && clearMenu["Q"].Cast<CheckBox>().CurrentValue && Q.IsReady(50)
-                        && (!HaveQ3 || clearMenu["Q3"].Cast<CheckBox>().CurrentValue))
+                    if (obj == null && Menu["ClQ"].Cast<CheckBox>().CurrentValue && _q.IsReady(50)
+                        && (!HaveQ3 || Menu["ClQ3"].Cast<CheckBox>().CurrentValue))
                         obj = EntityManager.MinionsAndMonsters.Get(EntityManager.MinionsAndMonsters.EntityType.Both,
-                            EntityManager.UnitTeam.Enemy, Player.ServerPosition, E.Range)
+                            EntityManager.UnitTeam.Enemy, Player.ServerPosition, _e.Range)
                             .Where(i => i.IsValidTarget(QCirWidth))
                             .FirstOrDefault();
 
-                    if (obj != null && E.Cast(obj))
+                    if (obj != null && _e.Cast(obj))
                     {
                         return;
                     }
                 }
             }
-            if (clearMenu["Q"].Cast<CheckBox>().CurrentValue && Q.IsReady() &&
-                (!HaveQ3 || clearMenu["Q3"].Cast<CheckBox>().CurrentValue))
+            if (Menu["ClQ"].Cast<CheckBox>().CurrentValue && _q.IsReady() &&
+                (!HaveQ3 || Menu["ClQ3"].Cast<CheckBox>().CurrentValue))
             {
                 if (Player.IsDashing())
                 {
@@ -293,19 +283,18 @@ namespace BrianSharp.Plugin
                                 return;
                             }
                         }
-                        var qMinHit = Q.MinimumHitChance;
-                        Q.MinimumHitChance = HitChance.Medium;
-                        var pos = (!HaveQ3 ? Q : Q2).GetPrediction((Obj_AI_Base) minionObj);
-                            //.GetLineFarmLocation(minionObj.Cast<Obj_AI_Base>().ToList());
-                        Q.MinimumHitChance = qMinHit;
-                        if (pos.CollisionObjects.Count() > 0 && (!HaveQ3 ? Q : Q2).Cast(pos.CastPosition))
+                        var qMinHit = _q.MinimumHitChance;
+                        _q.MinimumHitChance = HitChance.Medium;
+                        var pos = (!HaveQ3 ? _q : _q2).GetPrediction((Obj_AI_Base) minionObj);
+                        _q.MinimumHitChance = qMinHit;
+                        if (pos.CollisionObjects.Count() > 0 && (!HaveQ3 ? _q : _q2).Cast(pos.CastPosition))
                         {
                             return;
                         }
                     }
                 }
             }
-            if (clearMenu["Item"].Cast<CheckBox>().CurrentValue && (Hydra.IsReady() || Tiamat.IsReady()))
+            if (Menu["ClItem"].Cast<CheckBox>().CurrentValue && (Hydra.IsReady() || Tiamat.IsReady()))
             {
                 var minionObj =
                     EntityManager.MinionsAndMonsters.Get(EntityManager.MinionsAndMonsters.EntityType.Both,
@@ -329,15 +318,14 @@ namespace BrianSharp.Plugin
         }
 
 
-        private static void Fight(Orbwalker.ActiveModes mode)
+        private static void Fight()
         {
-            if (mode == Orbwalker.ActiveModes.Combo)
+            if (Orbwalker.ActiveModesFlags == Orbwalker.ActiveModes.Combo)
             {
-                if (comboMenu["R"].Cast<CheckBox>().CurrentValue && R.IsReady())
+                if (Menu["R"].Cast<CheckBox>().CurrentValue && _r.IsReady())
                 {
                     var obj =
-                        (from enemy in EntityManager.Heroes.Enemies.Where(i => R.IsInRange(i) && CanCastR(i))
-                            //HeroManager.Enemies.Where(i => R.IsInRange(i) && CanCastR(i))
+                        (from enemy in EntityManager.Heroes.Enemies.Where(i => _r.IsInRange(i) && CanCastR(i))
                             let sub = enemy.CountEnemiesInRange(RWidth)
                             where
                                 (sub > 1 && Player.GetSpellDamage(enemy, SpellSlot.R) > enemy.Health)
@@ -345,31 +333,29 @@ namespace BrianSharp.Plugin
                             select enemy).ToList();
                     if (obj.Any())
                     {
-                        var target = !comboMenu["RDelay"].Cast<CheckBox>().CurrentValue
-                            ? obj.FirstOrDefault()
-                            : obj.Where(i => TimeLeftR(i)*1000 < 150 + Game.Ping*2).FirstOrDefault();
-                        if (target != null && R.Cast(target))
+                        var target = TargetSelector.GetTarget(_r.Range, DamageType.Physical);
+                        if (target.IsValidTarget(_r.Range))
                         {
-                            return;
+                            _r.Cast();
                         }
                     }
                 }
-                if (comboMenu["E"].Cast<CheckBox>().CurrentValue && E.IsReady())
+                if (Menu["E"].Cast<CheckBox>().CurrentValue && _e.IsReady())
                 {
-                    if (comboMenu["EDmg"].Cast<CheckBox>().CurrentValue && comboMenu["Q"].Cast<CheckBox>().CurrentValue &&
-                        HaveQ3 && Q.IsReady(50))
+                    if (Menu["EDmg"].Cast<CheckBox>().CurrentValue && Menu["Q"].Cast<CheckBox>().CurrentValue &&
+                        HaveQ3 && _q.IsReady(50))
                     {
                         var target = TargetSelector.GetTarget(QRange, DamageType.Physical);
                         if (target != null)
                         {
                             var obj = GetNearObj(target, true);
-                            if (obj != null && E.Cast(obj))
+                            if (obj != null && _e.Cast(obj))
                             {
                                 return;
                             }
                         }
                     }
-                    if (comboMenu["EGap"].Cast<CheckBox>().CurrentValue)
+                    if (Menu["EGap"].Cast<CheckBox>().CurrentValue)
                     {
                         var target = TargetSelector.GetTarget(QRange, DamageType.Physical)
                                      ?? TargetSelector.GetTarget(Q2Range, DamageType.Physical);
@@ -378,10 +364,10 @@ namespace BrianSharp.Plugin
                             var obj = GetNearObj(target);
                             if (obj != null
                                 && (obj.NetworkId != target.NetworkId
-                                    ? Player.Distance(target) > comboMenu["EGapRange"].Cast<Slider>().CurrentValue
+                                    ? Player.Distance(target) > Menu["EGapRange"].Cast<Slider>().CurrentValue
                                     : !target.IsInAutoAttackRange(Player))
-                                && (!UnderTower(PosAfterE(obj)) || comboMenu["EGapTower"].Cast<CheckBox>().CurrentValue)
-                                && E.Cast(obj))
+                                && (!UnderTower(PosAfterE(obj)) || Menu["EGapTower"].Cast<CheckBox>().CurrentValue)
+                                && _e.Cast(obj))
                             {
                                 return;
                             }
@@ -389,11 +375,11 @@ namespace BrianSharp.Plugin
                     }
                 }
             }
-            if (comboMenu["Q"].Cast<CheckBox>().CurrentValue && Q.IsReady())
+            if (Orbwalker.ActiveModesFlags == Orbwalker.ActiveModes.Combo && Menu["Q"].Cast<CheckBox>().CurrentValue && _q.IsReady())
             {
-                if (mode == Orbwalker.ActiveModes.Combo
-                    || ((!HaveQ3 || comboMenu["Q3"].Cast<CheckBox>().CurrentValue)
-                        && (!UnderTower(Player.ServerPosition) || comboMenu["QTower"].Cast<CheckBox>().CurrentValue)))
+                if (Orbwalker.ActiveModesFlags == Orbwalker.ActiveModes.Combo
+                    || ((!HaveQ3 || Menu["Q3"].Cast<CheckBox>().CurrentValue)
+                        && (!UnderTower(Player.ServerPosition) || Menu["QTower"].Cast<CheckBox>().CurrentValue)))
                 {
                     if (Player.IsDashing())
                     {
@@ -401,17 +387,17 @@ namespace BrianSharp.Plugin
                         {
                             return;
                         }
-                        if (!HaveQ3 && mode == Orbwalker.ActiveModes.Combo &&
-                            comboMenu["QStack"].Cast<CheckBox>().CurrentValue &&
-                            comboMenu["E"].Cast<CheckBox>().CurrentValue
-                            && comboMenu["EGap"].Cast<CheckBox>().CurrentValue &&
+                        if (!HaveQ3 && Orbwalker.ActiveModesFlags == Orbwalker.ActiveModes.Combo &&
+                            Menu["QStack"].Cast<CheckBox>().CurrentValue &&
+                            Menu["E"].Cast<CheckBox>().CurrentValue
+                            && Menu["EGap"].Cast<CheckBox>().CurrentValue &&
                             TargetSelector.GetTarget(200, DamageType.Physical) == null)
                         {
                             var minionObj =
                                 EntityManager.MinionsAndMonsters.Get(EntityManager.MinionsAndMonsters.EntityType.Both,
                                     EntityManager.UnitTeam.Enemy, Player.GetDashInfo().EndPos, QCirWidth);
                             if (minionObj.Any() && Player.Distance(Player.GetDashInfo().EndPos) < 150
-                                && CastQCir((Obj_AI_Base) (minionObj.Where(i => i.Distance(Player) < Q.Range))))
+                                && CastQCir((Obj_AI_Base) (minionObj.Where(i => i.Distance(Player) < _q.Range))))
                             {
                                 return;
                             }
@@ -437,8 +423,8 @@ namespace BrianSharp.Plugin
                                 var predPos = new Vector3();
                                 foreach (var hero in EntityManager.Heroes.Enemies.Where(i => i.IsValidTarget(Q2Range)))
                                 {
-                                    var pred = Q2.GetPrediction(hero);
-                                    if (pred.HitChance >= Q2.MinimumHitChance && pred.CollisionObjects.Count() > hit)
+                                    var pred = _q2.GetPrediction(hero);
+                                    if (pred.HitChancePercent >= 85  && pred.CollisionObjects.Count() > hit)
                                     {
                                         hit = pred.CollisionObjects.Count();
                                         predPos = pred.CastPosition;
@@ -446,7 +432,7 @@ namespace BrianSharp.Plugin
                                 }
                                 if (predPos.IsValid())
                                 {
-                                    if (Q2.Cast(predPos))
+                                    if (_q2.Cast(predPos))
                                     {
                                         return;
                                     }
@@ -459,17 +445,26 @@ namespace BrianSharp.Plugin
                         }
                     }
                 }
-                if (mode == Orbwalker.ActiveModes.Harass && harassMenu["QLastHit"].Cast<CheckBox>().CurrentValue &&
+                if (Orbwalker.ActiveModesFlags == Orbwalker.ActiveModes.Combo && _q.IsReady())
+                {
+                    var qTarget = TargetSelector.GetTarget(QRange, DamageType.Physical);
+                    if (qTarget.IsValidTarget(QRange))
+                    {
+                        CastQCir(qTarget);
+                    }
+                }
+
+                if (Orbwalker.ActiveModesFlags == Orbwalker.ActiveModes.Harass && Menu["HarQLastHit"].Cast<CheckBox>().CurrentValue &&
                     TargetSelector.GetTarget(100, DamageType.Physical) == null && !HaveQ3
                     && !Player.IsDashing())
                 {
                     var obj =
                         EntityManager.MinionsAndMonsters.Get(EntityManager.MinionsAndMonsters.EntityType.Both,
-                            EntityManager.UnitTeam.Enemy, Player.Position, Q.Range)
+                            EntityManager.UnitTeam.Enemy, Player.Position, _q.Range)
                             .FirstOrDefault(i => CanKill(i, GetQDmg(i)));
                     if (obj != null)
                     {
-                        Q.Cast(obj);
+                        CastQCir(obj);
                     }
                 }
             }
@@ -477,11 +472,11 @@ namespace BrianSharp.Plugin
 
         private static void Flee()
         {
-            if (!fleeMenu["E"].Cast<CheckBox>().CurrentValue)
+            if (!Menu["FlE"].Cast<CheckBox>().CurrentValue)
             {
                 return;
             }
-            if (fleeMenu["EStackQ"].Cast<CheckBox>().CurrentValue && Q.IsReady() && !HaveQ3 && Player.IsDashing())
+            if (Menu["FlEStackQ"].Cast<CheckBox>().CurrentValue && _q.IsReady() && !HaveQ3 && Player.IsDashing())
             {
                 if (QCirTarget != null && CastQCir(QCirTarget))
                 {
@@ -491,17 +486,17 @@ namespace BrianSharp.Plugin
                     EntityManager.MinionsAndMonsters.Get(EntityManager.MinionsAndMonsters.EntityType.Both,
                         EntityManager.UnitTeam.Enemy, Player.GetDashInfo().EndPos, QCirWidth);
                 if (minionObj.Any() && Player.Distance(Player.GetDashInfo().EndPos) < 150
-                    && CastQCir(minionObj.FirstOrDefault(i => i.Distance(Player) < Q.Range)))
+                    && CastQCir(minionObj.FirstOrDefault(i => i.Distance(Player) < _q.Range)))
                 {
                     return;
                 }
             }
             var obj = GetNearObj();
-            if (obj == null || !E.IsReady())
+            if (obj == null || !_e.IsReady())
             {
                 return;
             }
-            E.Cast(obj);
+            _e.Cast(obj);
         }
 
         private static double GetEDmg(Obj_AI_Base target)
@@ -509,26 +504,26 @@ namespace BrianSharp.Plugin
             return Player.CalculateDamageOnUnit(
                 target,
                 DamageType.Magical,
-                (float) ((50 + 20*E.Level)*(1 + Math.Max(0, Player.GetBuffCount("YasuoDashScalar")*0.25))
+                (float) ((50 + 20*_e.Level)*(1 + Math.Max(0, Player.GetBuffCount("YasuoDashScalar")*0.25))
                          + 0.6*Player.FlatMagicDamageMod));
         }
 
         private static Obj_AI_Base GetNearObj(Obj_AI_Base target = null, bool inQCir = false)
         {
             var pos = target != null
-                ? Prediction.Position.PredictUnitPosition(target, (int) (E.CastDelay + E.Handle.SData.MissileSpeed))
+                ? Prediction.Position.PredictUnitPosition(target, (int) (_e.CastDelay + _e.Handle.SData.MissileSpeed))
                     .To3D()
                 : Game.CursorPos;
             var obj = new List<Obj_AI_Base>();
             obj.AddRange(EntityManager.MinionsAndMonsters.Get(EntityManager.MinionsAndMonsters.EntityType.Both,
-                EntityManager.UnitTeam.Enemy, Player.Position, E.Range));
-            obj.AddRange(EntityManager.Heroes.Enemies.Where(i => i.IsValidTarget(E.Range)));
+                EntityManager.UnitTeam.Enemy, Player.Position, _e.Range));
+            obj.AddRange(EntityManager.Heroes.Enemies.Where(i => i.IsValidTarget(_e.Range)));
             return
                 obj.Where(
                     i =>
                         CanCastE(i) && pos.Distance(PosAfterE(i)) < (inQCir ? QCirWidthMin : Player.Distance(pos))
                     )
-                    .FirstOrDefault(i => pos.Distance(PosAfterE(i)) < E.Range);
+                    .FirstOrDefault(i => pos.Distance(PosAfterE(i)) < _e.Range);
         }
 
         private static double GetQDmg(Obj_AI_Base target)
@@ -576,7 +571,7 @@ namespace BrianSharp.Plugin
                     reduction += 1*mastery.Points;
                 }
             }
-            return Player.CalculateDamageOnUnit(target, DamageType.Physical, (int) (20*Q.Level + (dmg - reduction)*k))
+            return Player.CalculateDamageOnUnit(target, DamageType.Physical, (int) (20*_q.Level + (dmg - reduction)*k))
                    + (Player.GetBuffCount("ItemStatikShankCharge") == 100
                        ? Player.CalculateDamageOnUnit(
                            target,
@@ -585,207 +580,42 @@ namespace BrianSharp.Plugin
                        : 0);
         }
 
-        private static void KillSteal()
-        {
-            if (killStealMenu["Ignite"].Cast<CheckBox>().CurrentValue && Player.Spellbook.GetSpell(Ignite).IsReady)
-            {
-                var target = TargetSelector.GetTarget(600, DamageType.True);
-                if (target != null && CastIgnite(target))
-                {
-                    return;
-                }
-            }
-            if (killStealMenu["Q"].Cast<CheckBox>().CurrentValue && Q.IsReady())
-            {
-                if (Player.IsDashing())
-                {
-                    var target = QCirTarget;
-                    if (target != null && CanKill(target, GetQDmg(target)) && CastQCir(target))
-                    {
-                        return;
-                    }
-                }
-                else
-                {
-                    var target = TargetSelector.GetTarget(
-                        !HaveQ3 ? QRange : Q2Range,
-                        DamageType.Physical);
-                    if (target != null && CanKill(target, GetQDmg(target))
-                        && (!HaveQ3) && target.HasBuff("YasuoQ") || target.HasBuff("YasuoQ2"))
-                    {
-                        return;
-                    }
-                }
-            }
-            if (killStealMenu["E"].Cast<CheckBox>().CurrentValue && E.IsReady())
-            {
-                var target = TargetSelector.GetTarget(E.Range, DamageType.Magical);
-                if (target != null
-                    && (CanKill(target, GetEDmg(target))
-                        || (killStealMenu["Q"].Cast<CheckBox>().CurrentValue && Q.IsReady(50)
-                            && CanKill(target, GetEDmg(target) + GetQDmg(target)))) && E.Cast(target))
-                {
-                    return;
-                }
-            }
-            if (killStealMenu["R"].Cast<CheckBox>().CurrentValue && R.IsReady())
-            {
-                var target = TargetSelector.GetTarget(R.Range, DamageType.Physical);
-                if (target != null && Player.GetSpellDamage(target, SpellSlot.R) > target.Health)
-                {
-                    R.Cast(target);
-                }
-            }
-        }
-
         private static void LastHit()
         {
-            if (lastHitMenu["Q"].Cast<CheckBox>().CurrentValue && Q.IsReady() && !Player.IsDashing()
-                && (!HaveQ3 || lastHitMenu["Q3"].Cast<CheckBox>().CurrentValue))
+            if (Menu["LhQ"].Cast<CheckBox>().CurrentValue && _q.IsReady() && !Player.IsDashing()
+                && (!HaveQ3 || Menu["LhQ3"].Cast<CheckBox>().CurrentValue))
             {
                 var obj =
                     EntityManager.MinionsAndMonsters.Get(EntityManager.MinionsAndMonsters.EntityType.Both,
                         EntityManager.UnitTeam.Enemy, Player.Position, !HaveQ3 ? QRange : Q2Range)
                         .FirstOrDefault(i => CanKill(i, GetQDmg(i)));
-                if (obj != null && (!HaveQ3) && obj.HasBuff("YasuoQ") || obj.HasBuff("YasuoQ2"))
+                if (obj != null && (!HaveQ3) && obj.HasBuff("YasuoQ"))
                 {
                     return;
                 }
             }
-            if (lastHitMenu["E"].Cast<CheckBox>().CurrentValue && E.IsReady())
+            if (Menu["LhE"].Cast<CheckBox>().CurrentValue && _e.IsReady())
             {
                 var obj =
                     EntityManager.MinionsAndMonsters.Get(EntityManager.MinionsAndMonsters.EntityType.Both,
-                        EntityManager.UnitTeam.Enemy, Player.Position, E.Range).Where(i =>
+                        EntityManager.UnitTeam.Enemy, Player.Position, _e.Range).Where(i =>
                             CanCastE(i)
                             && (!i.IsInAutoAttackRange(Player) || i.Health > Player.GetAutoAttackDamage(i, true))
-                            && (!UnderTower(PosAfterE(i)) || lastHitMenu["ETower"].Cast<CheckBox>().CurrentValue))
-                        .FirstOrDefault(i => i.IsValidTarget(E.Range));
+                            && (!UnderTower(PosAfterE(i)) || Menu["LhETower"].Cast<CheckBox>().CurrentValue))
+                        .FirstOrDefault(i => i.IsValidTarget(_e.Range));
 
                 if (obj != null)
                 {
-                    E.Cast(obj);
+                    _e.Cast(obj);
                 }
             }
-        }
-
-        private static void OnPossibleToInterrupt(Obj_AI_Base unit, Interrupter.InterruptableSpellEventArgs spell)
-        {
-            if (Player.IsDead || !interruptMenu["Q"].Cast<CheckBox>().CurrentValue
-                || !interruptMenu[unit.CharData.BaseSkinName + "_" + spell.Slot].Cast<CheckBox>().CurrentValue ||
-                !HaveQ3)
-            {
-                return;
-            }
-            if (E.IsReady() && Q.IsReady(50))
-            {
-                if (E.IsInRange(unit) && CanCastE(unit) && unit.Distance(PosAfterE(unit)) < QCirWidthMin
-                    && E.Cast(unit))
-                {
-                    return;
-                }
-                if (unit.IsInRange(unit, E.Range + QCirWidthMin))
-                {
-                    var obj = GetNearObj(unit, true);
-                    if (obj != null && E.Cast(obj))
-                    {
-                        return;
-                    }
-                }
-            }
-            if (!Q.IsReady())
-            {
-                return;
-            }
-            if (Player.IsDashing())
-            {
-                var pos = Player.GetDashInfo().EndPos;
-                if (Player.Distance(pos) < 150 && unit.Distance(pos) < QCirWidth)
-                {
-                    CastQCir(unit);
-                }
-            }
-            else
-            {
-                Q2.Cast(unit);
-            }
-        }
-
-        private static void OnUpdate(EventArgs args)
-        {
-            if (!Equals(Q.CastDelay, GetQDelay))
-            {
-                Q.CastDelay = (int) GetQDelay;
-            }
-            if (!Equals(Q2.CastDelay, GetQ2Delay))
-            {
-                Q2.CastDelay = (int) GetQ2Delay;
-            }
-            if (Player.IsDead || MenuGUI.IsChatOpen || Player.IsRecalling())
-            {
-                return;
-            }
-            switch (Orbwalker.ActiveModesFlags)
-            {
-                case Orbwalker.ActiveModes.Combo:
-                    Fight(Orbwalker.ActiveModes.Combo);
-                    break;
-                case Orbwalker.ActiveModes.Harass:
-                    Fight(Orbwalker.ActiveModes.Harass);
-                    break;
-                case Orbwalker.ActiveModes.LaneClear:
-                    Clear();
-                    break;
-                case Orbwalker.ActiveModes.LastHit:
-                    LastHit();
-                    break;
-                case Orbwalker.ActiveModes.Flee:
-                    Flee();
-                    break;
-            }
-            AutoQ();
-            KillSteal();
-            StackQ();
         }
 
         private static Vector3 PosAfterE(Obj_AI_Base target)
         {
             return Player.ServerPosition.Extend(
                 target.ServerPosition,
-                Player.Distance(target) < 410 ? E.Range : Player.Distance(target) + 65).To3D();
-        }
-
-        private static void StackQ()
-        {
-            if (!miscMenu["StackQ"].Cast<CheckBox>().CurrentValue || !Q.IsReady() || Player.IsDashing() || HaveQ3)
-            {
-                return;
-            }
-            var target = TargetSelector.GetTarget(Q.Range, DamageType.Physical);
-            if (target != null && (!UnderTower(Player.ServerPosition) || !UnderTower(target.ServerPosition)))
-            {
-                Q.Cast(target);
-            }
-            else
-            {
-                var minionObj = EntityManager.MinionsAndMonsters.Get(EntityManager.MinionsAndMonsters.EntityType.Both,
-                    EntityManager.UnitTeam.Enemy, Player.ServerPosition, QRange);
-                if (!minionObj.Any())
-                {
-                    return;
-                }
-                var obj = minionObj.FirstOrDefault(i => CanKill(i, GetQDmg(i)))
-                          ?? minionObj.FirstOrDefault(i => i.Distance(Player) < Q.Range);
-                if (obj != null)
-                {
-                    var pred = Q.GetPrediction(obj);
-
-                    if (pred.HitChance >= HitChance.Medium)
-                    {
-                        Q.Cast(pred.CastPosition);
-                    }
-                }
-            }
+                Player.Distance(target) < 410 ? _e.Range : Player.Distance(target) + 65).To3D();
         }
 
         private static float TimeLeftR(AIHeroClient target)
@@ -818,22 +648,10 @@ namespace BrianSharp.Plugin
 
         #region Fields
 
-        public string ChampionName;
+        public string ChampionName = "Yasuo";
 
-        public SpellSlot Slot;
 
         public string[] SpellNames = {};
-
-        #endregion
-    }
-
-    internal class Targets
-    {
-        #region Fields
-
-        public MissileClient Obj;
-
-        public Vector3 Start;
 
         #endregion
     }
