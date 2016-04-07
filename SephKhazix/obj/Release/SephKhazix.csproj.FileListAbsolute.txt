@@ -1,0 +1,12 @@
+C:\Users\Rexy\Desktop\SephKhazix\bin\Release\SephKhazix.exe.config
+C:\Users\Rexy\Desktop\SephKhazix\bin\Release\SephKhazix.exe
+C:\Users\Rexy\Desktop\SephKhazix\bin\Release\SephKhazix.pdb
+C:\Users\Rexy\Desktop\SephKhazix\bin\Release\EloBuddy.dll
+C:\Users\Rexy\Desktop\SephKhazix\bin\Release\EloBuddy.SDK.dll
+C:\Users\Rexy\Desktop\SephKhazix\bin\Release\SharpDX.Direct3D9.dll
+C:\Users\Rexy\Desktop\SephKhazix\bin\Release\SharpDX.dll
+C:\Users\Rexy\Desktop\SephKhazix\bin\Release\Newtonsoft.Json.dll
+C:\Users\Rexy\Desktop\SephKhazix\bin\Release\EloBuddy.Sandbox.dll
+C:\Users\Rexy\Desktop\SephKhazix\obj\Release\SephKhazix.csprojResolveAssemblyReference.cache
+C:\Users\Rexy\Desktop\SephKhazix\obj\Release\SephKhazix.exe
+C:\Users\Rexy\Desktop\SephKhazix\obj\Release\SephKhazix.pdb
