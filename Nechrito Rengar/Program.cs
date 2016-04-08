@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Linq;
 using EloBuddy;
 using EloBuddy.SDK;
@@ -12,7 +13,6 @@ namespace Nechrito_Rengar
 {
     class Program : Logic
     {
-        private static bool _ultiCasted;
         public static readonly int[] BlueSmite = { 3706, 1400, 1401, 1402, 1403 };
 
         public static readonly int[] RedSmite = { 3715, 1415, 1414, 1413, 1412 };
@@ -30,42 +30,11 @@ namespace Nechrito_Rengar
             MenuConfig.LoadMenu();
             Spells.Initialise();
             Game.OnUpdate += OnTick;
-            Game.OnTick += Game_OnTick;
             Obj_AI_Base.OnProcessSpellCast += OnDoCast;
             Obj_AI_Base.OnProcessSpellCast += OnDoCastLc;
-            Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnSpellCast;
             Drawing.OnDraw += Drawing_OnDraw;
        
 
-        }
-
-        static void Game_OnTick(EventArgs args)
-        {
-            if (_ultiCasted && !RengarHasUlti)
-            {
-                _ultiCasted = false;
-            }
-            if (MenuConfig.BurstAutoMode && _ultiCasted && !MenuConfig.BurstModeActive)
-            {
-                MenuConfig.Config["Burst.Active"].Cast<KeyBind>().CurrentValue = true;
-            }
-        }
-
-        static void Obj_AI_Base_OnSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
-        {
-            if (sender.IsMe)
-            {
-                var spellName = args.SData.Name.ToLower();
-
-                if (spellName == "rengarr")
-                {
-                    _ultiCasted = true;
-                }
-                if (spellName == "rengarq")
-                {
-                    Orbwalker.ResetAutoAttack();
-                }
-            }
         }
         private static void OnTick(EventArgs args)
         {
@@ -78,7 +47,20 @@ namespace Nechrito_Rengar
                 return;
             }
 
-            if (MenuConfig.BurstModeActive)
+            if (MenuConfig.TripleActive && MenuConfig.BurstModeActive)
+            {
+                Core.DelayAction(() => Chat.Print("Error Please Only Select One Mode !",Color.Red),1000);
+            }
+
+            if (MenuConfig.TripleActive && !MenuConfig.BurstModeActive)
+            {
+                if (Orbwalker.ActiveModesFlags == Orbwalker.ActiveModes.Combo)
+                {
+                    TripleQ.TripleQLogic();
+                }
+            }
+
+            if (MenuConfig.BurstModeActive && !MenuConfig.TripleActive)
             {
                 if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo))
                 {
@@ -86,7 +68,7 @@ namespace Nechrito_Rengar
                 }
             }
 
-            else if (!MenuConfig.BurstModeActive)
+            else if (!MenuConfig.BurstModeActive && !MenuConfig.TripleActive)
             {
                 if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo))
                 {
@@ -149,11 +131,14 @@ namespace Nechrito_Rengar
             {
                 if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.LaneClear))
                 {
-                    var minions = EntityManager.MinionsAndMonsters.GetLaneMinions(EntityManager.UnitTeam.Enemy,Player.ServerPosition,600f).FirstOrDefault();
+                    var minions =
+                        EntityManager.MinionsAndMonsters.EnemyMinions.Where(i => i.IsValidTarget(600))
+                            .OrderByDescending(i => i.Health)
+                            .LastOrDefault(i => i != null);
                     {
                         if (minions == null || (int)Player.Mana == 5 && MenuConfig.Passive)
                             return;
-                        if(Player.Mana <= 5)
+                        if((int)Player.Mana == 5)
                         {
                             if (Spells.W.IsReady())
                                 Spells.W.Cast();
@@ -164,9 +149,21 @@ namespace Nechrito_Rengar
                             {
                                 Spells.Q.Cast();
                                 CastHydra();
-                            }
-                                
+                            }   
                         }  
+                        if(Player.Mana <= 4)
+                       {
+                             if (Spells.W.IsReady())
+                                 Spells.W.Cast();
+ 
+                             if (Spells.E.IsReady() && Player.Mana < 5)
+                                 Spells.E.Cast(minions);
+                             if (Spells.Q.IsReady())
+                             {
+                                 Spells.Q.Cast();
+                                 CastHydra();
+                             }
+                         }
                     }
                 }
             }
@@ -180,24 +177,36 @@ namespace Nechrito_Rengar
 
             if (drawcurrentmode)
             {
-                if (MenuConfig.BurstModeActive)
+                if (MenuConfig.TripleActive && MenuConfig.BurstModeActive)
                 {
-                    Drawing.DrawText(Drawing.Width*0.70f, Drawing.Height*0.95f, System.Drawing.Color.Yellow,
+                    Drawing.DrawText(Drawing.Width * 0.70f, Drawing.Height * 0.95f, Color.Green,
+                        "Error !");
+                }
+
+                if (MenuConfig.TripleActive && !MenuConfig.BurstModeActive)
+                {
+                    Drawing.DrawText(Drawing.Width * 0.70f, Drawing.Height * 0.95f, Color.Red,
+                        "Mode : TripleQ");
+                }
+
+                if (MenuConfig.BurstModeActive && !MenuConfig.TripleActive)
+                {
+                    Drawing.DrawText(Drawing.Width*0.70f, Drawing.Height*0.95f, Color.Yellow,
                         "Mode : Burst");
                 }
-                else if (!MenuConfig.BurstModeActive)
+                else if (!MenuConfig.BurstModeActive && !MenuConfig.TripleActive)
                 {
                     switch (MenuConfig.ComboModeValue)
                     {
                         case 1:
                         {
-                            Drawing.DrawText(Drawing.Width*0.70f, Drawing.Height*0.95f, System.Drawing.Color.White,
+                            Drawing.DrawText(Drawing.Width*0.70f, Drawing.Height*0.95f, Color.White,
                                 "Mode : Combo");
                             break;
                         }
                         case 2:
                         {
-                            Drawing.DrawText(Drawing.Width*0.70f, Drawing.Height*0.95f, System.Drawing.Color.Aqua,
+                            Drawing.DrawText(Drawing.Width*0.70f, Drawing.Height*0.95f, Color.Aqua,
                                 "Mode : APCombo");
                             break;
                         }

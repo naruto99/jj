@@ -10,7 +10,7 @@ namespace Nechrito_Rengar.Classes.Modes
             var target = TargetSelector.SelectedTarget;
             if (target != null && target.IsValidTarget() && !target.IsZombie)
             {
-                if ((int)Player.Mana <= 5 && (Player.Distance(target.Position) <= 900f))
+                if ((int)Player.Mana == 5 && (Player.Distance(target.Position) <= 900f))
                 {
                     if (Spells.Q.IsReady())
                     {

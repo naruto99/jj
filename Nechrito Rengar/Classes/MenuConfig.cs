@@ -14,8 +14,8 @@ namespace Nechrito_Rengar.Classes
             Config.AddLabel("Nechrito Rengar ported by Rexy");
             Config.AddLabel("1 => Q Mode || 2 => APMode");
             Config.Add("Combo.Mode", new Slider("Combo Mode", 1, 1, 2));
-            Config.Add("Burst.Auto", new CheckBox("Auto Burst Mode Logic"));
             Config.Add("Burst.Active", new KeyBind("Burst Mode Switcher", false, KeyBind.BindTypes.PressToggle, 'T'));
+            Config.Add("Triple.Active", new KeyBind("TripleQ Switcher", false, KeyBind.BindTypes.PressToggle, 'G'));
             Config.Add("AutoHp.Active", new CheckBox("Auto Hp Active"));
             Config.Add("AutoHp", new Slider("Auto Hp Value", 20));
             Config.Add("DrawCurrentMode", new CheckBox("Draw Current Mode"));
@@ -26,9 +26,9 @@ namespace Nechrito_Rengar.Classes
             get { return Config["Burst.Active"].Cast<KeyBind>().CurrentValue; }
         }
 
-        public static bool BurstAutoMode
+        public static bool TripleActive
         {
-            get { return Config["Burst.Auto"].Cast<CheckBox>().CurrentValue; }
+            get { return Config["Triple.Active"].Cast<KeyBind>().CurrentValue; }
         }
 
         public static bool Passive
