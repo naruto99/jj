@@ -487,7 +487,7 @@ namespace LeagueSharp.Common
                     {
                         result.CastPosition = input.RangeCheckFrom +
                                               input.Range*
-                                              (result.UnitPosition - input.RangeCheckFrom).LSTo2D().Normalized().To3D();
+                                              (result.UnitPosition - input.RangeCheckFrom).LSTo2D().LSNormalized().To3D();
                     }
                     else
                     {
@@ -527,7 +527,7 @@ namespace LeagueSharp.Common
                 var dashPred = GetPositionOnPath(
                     input, new List<Vector2> {input.Unit.ServerPosition.LSTo2D(), endP}, dashData.Speed);
                 if (dashPred.Hitchance >= HitChance.High &&
-                    dashPred.UnitPosition.LSTo2D().Distance(input.Unit.Position.LSTo2D(), endP, true) < 200)
+                    dashPred.UnitPosition.LSTo2D().LSDistance(input.Unit.Position.LSTo2D(), endP, true) < 200)
                 {
                     dashPred.CastPosition = dashPred.UnitPosition;
                     dashPred.Hitchance = HitChance.Dashing;
@@ -535,9 +535,9 @@ namespace LeagueSharp.Common
                 }
 
                 //At the end of the dash:
-                if (dashData.Path.PathLength() > 200)
+                if (dashData.Path.LSPathLength() > 200)
                 {
-                    var timeToPoint = input.Delay/2f + input.From.LSTo2D().Distance(endP)/input.Speed - 0.25f;
+                    var timeToPoint = input.Delay / 2f + input.From.LSTo2D().LSDistance(endP) / input.Speed - 0.25f;
                     if (timeToPoint <=
                         input.Unit.LSDistance(endP)/dashData.Speed + input.RealRadius/input.Unit.MoveSpeed)
                     {
@@ -652,7 +652,7 @@ namespace LeagueSharp.Common
                 };
             }
 
-            var pLength = path.PathLength();
+            var pLength = path.LSPathLength();
 
             //Skillshots with only a delay
             if (pLength >= input.Delay*speed - input.RealRadius &&
@@ -664,11 +664,11 @@ namespace LeagueSharp.Common
                 {
                     var a = path[i];
                     var b = path[i + 1];
-                    var d = a.Distance(b);
+                    var d = a.LSDistance(b);
 
                     if (d >= tDistance)
                     {
-                        var direction = (b - a).Normalized();
+                        var direction = (b - a).LSNormalized();
 
                         var cp = a + direction*tDistance;
                         var p = a +
@@ -710,29 +710,29 @@ namespace LeagueSharp.Common
                 {
                     var a = path[i];
                     var b = path[i + 1];
-                    var tB = a.Distance(b)/speed;
-                    var direction = (b - a).Normalized();
+                    var tB = a.LSDistance(b) / speed;
+                    var direction = (b - a).LSNormalized();
                     a = a - speed*tT*direction;
-                    var sol = Geometry.VectorMovementCollision(a, b, speed, input.From.LSTo2D(), input.Speed, tT);
+                    var sol = Geometry.LSVectorMovementCollision(a, b, speed, input.From.LSTo2D(), input.Speed, tT);
                     var t = (float) sol[0];
                     var pos = (Vector2) sol[1];
 
                     if (pos.IsValid() && t >= tT && t <= tT + tB)
                     {
-                        if (pos.Distance(b, true) < 20)
+                        if (pos.LSDistance(b, true) < 20)
                             break;
                         var p = pos + input.RealRadius*direction;
 
                         if (input.Type == SkillshotType.SkillshotLine && false)
                         {
-                            var alpha = (input.From.LSTo2D() - p).AngleBetween(a - b);
+                            var alpha = (input.From.LSTo2D() - p).LSAngleBetween(a - b);
                             if (alpha > 30 && alpha < 180 - 30)
                             {
-                                var beta = (float) Math.Asin(input.RealRadius/p.Distance(input.From));
-                                var cp1 = input.From.LSTo2D() + (p - input.From.LSTo2D()).Rotated(beta);
-                                var cp2 = input.From.LSTo2D() + (p - input.From.LSTo2D()).Rotated(-beta);
+                                var beta = (float)Math.Asin(input.RealRadius / p.LSDistance(input.From));
+                                var cp1 = input.From.LSTo2D() + (p - input.From.LSTo2D()).LSRotated(beta);
+                                var cp2 = input.From.LSTo2D() + (p - input.From.LSTo2D()).LSRotated(-beta);
 
-                                pos = cp1.Distance(pos, true) < cp2.Distance(pos, true) ? cp1 : cp2;
+                                pos = cp1.LSDistance(pos, true) < cp2.LSDistance(pos, true) ? cp1 : cp2;
                             }
                         }
 
@@ -886,10 +886,10 @@ namespace LeagueSharp.Common
             internal static int GetHits(Vector2 end, double range, float angle, List<Vector2> points)
             {
                 return (from point in points
-                    let edge1 = end.Rotated(-angle/2)
-                    let edge2 = edge1.Rotated(angle)
+                        let edge1 = end.LSRotated(-angle / 2)
+                        let edge2 = edge1.LSRotated(angle)
                     where
-                        point.Distance(new Vector2(), true) < range*range && edge1.CrossProduct(point) > 0 &&
+                        point.LSDistance(new Vector2(), true) < range * range && edge1.CrossProduct(point) > 0 &&
                         point.CrossProduct(edge2) > 0
                     select point).Count();
             }
@@ -951,7 +951,7 @@ namespace LeagueSharp.Common
                         }
                     }
 
-                    if (bestCandidateHits > 1 && input.From.LSTo2D().Distance(bestCandidate, true) > 50*50)
+                    if (bestCandidateHits > 1 && input.From.LSTo2D().LSDistance(bestCandidate, true) > 50 * 50)
                     {
                         return new PredictionOutput
                         {
@@ -982,7 +982,7 @@ namespace LeagueSharp.Common
             /// <returns>IEnumerable&lt;Vector2&gt;.</returns>
             internal static IEnumerable<Vector2> GetHits(Vector2 start, Vector2 end, double radius, List<Vector2> points)
             {
-                return points.Where(p => p.Distance(start, end, true, true) <= radius*radius);
+                return points.Where(p => p.LSDistance(start, end, true, true) <= radius * radius);
             }
 
             /// <summary>
@@ -996,16 +996,16 @@ namespace LeagueSharp.Common
             internal static Vector2[] GetCandidates(Vector2 from, Vector2 to, float radius, float range)
             {
                 var middlePoint = (from + to)/2;
-                var intersections = Geometry.CircleCircleIntersection(
-                    from, middlePoint, radius, from.Distance(middlePoint));
+                var intersections = Geometry.LSCircleCircleIntersection(
+                    from, middlePoint, radius, from.LSDistance(middlePoint));
 
                 if (intersections.Length > 1)
                 {
                     var c1 = intersections[0];
                     var c2 = intersections[1];
 
-                    c1 = from + range*(to - c1).Normalized();
-                    c2 = from + range*(to - c2).Normalized();
+                    c1 = from + range * (to - c1).LSNormalized();
+                    c2 = from + range * (to - c2).LSNormalized();
 
                     return new[] {c1, c2};
                 }
@@ -1076,12 +1076,12 @@ namespace LeagueSharp.Common
                             {
                                 var startP = input.From.LSTo2D();
                                 var endP = bestCandidate;
-                                var proj1 = positionsList[i].ProjectOn(startP, endP);
-                                var proj2 = positionsList[j].ProjectOn(startP, endP);
+                                var proj1 = positionsList[i].LSProjectOn(startP, endP);
+                                var proj2 = positionsList[j].LSProjectOn(startP, endP);
                                 var dist = Vector2.DistanceSquared(bestCandidateHitPoints[i], proj1.LinePoint) +
                                            Vector2.DistanceSquared(bestCandidateHitPoints[j], proj2.LinePoint);
                                 if (dist >= maxDistance &&
-                                    (proj1.LinePoint - positionsList[i]).AngleBetween(
+                                    (proj1.LinePoint - positionsList[i]).LSAngleBetween(
                                         proj2.LinePoint - positionsList[j]) > 90)
                                 {
                                     maxDistance = dist;
@@ -1189,7 +1189,7 @@ namespace LeagueSharp.Common
                                 var minionPrediction = Prediction.GetPrediction(input, false, false);
                                 if (
                                     minionPrediction.UnitPosition.LSTo2D()
-                                        .Distance(input.From.LSTo2D(), position.LSTo2D(), true, true) <=
+                                        .LSDistance(input.From.LSTo2D(), position.LSTo2D(), true, true) <=
                                     Math.Pow((input.Radius + 15 + minion.BoundingRadius), 2))
                                 {
                                     result.Add(minion);
@@ -1208,7 +1208,7 @@ namespace LeagueSharp.Common
                                 var prediction = Prediction.GetPrediction(input, false, false);
                                 if (
                                     prediction.UnitPosition.LSTo2D()
-                                        .Distance(input.From.LSTo2D(), position.LSTo2D(), true, true) <=
+                                        .LSDistance(input.From.LSTo2D(), position.LSTo2D(), true, true) <=
                                     Math.Pow((input.Radius + 50 + hero.BoundingRadius), 2))
                                 {
                                     result.Add(hero);
@@ -1228,7 +1228,7 @@ namespace LeagueSharp.Common
                                 var prediction = Prediction.GetPrediction(input, false, false);
                                 if (
                                     prediction.UnitPosition.LSTo2D()
-                                        .Distance(input.From.LSTo2D(), position.LSTo2D(), true, true) <=
+                                        .LSDistance(input.From.LSTo2D(), position.LSTo2D(), true, true) <=
                                     Math.Pow((input.Radius + 50 + hero.BoundingRadius), 2))
                                 {
                                     result.Add(hero);
@@ -1276,15 +1276,15 @@ namespace LeagueSharp.Common
                             var wallWidth = (300 + 50*Convert.ToInt32(level));
 
                             var wallDirection =
-                                (wall.Position.LSTo2D() - _yasuoWallCastedPos).Normalized().LSPerpendicular();
+                                (wall.Position.LSTo2D() - _yasuoWallCastedPos).LSNormalized().LSPerpendicular();
                             var wallStart = wall.Position.LSTo2D() + wallWidth/2f*wallDirection;
                             var wallEnd = wallStart - wallWidth*wallDirection;
 
-                            if (wallStart.Intersection(wallEnd, position.LSTo2D(), input.From.LSTo2D()).Intersects)
+                            if (wallStart.LSIntersection(wallEnd, position.LSTo2D(), input.From.LSTo2D()).Intersects)
                             {
                                 var t = Utils.TickCount +
-                                        (wallStart.Intersection(wallEnd, position.LSTo2D(), input.From.LSTo2D())
-                                            .Point.Distance(input.From)/input.Speed + input.Delay)*1000;
+                                        (wallStart.LSIntersection(wallEnd, position.LSTo2D(), input.From.LSTo2D())
+                                            .Point.LSDistance(input.From) / input.Speed + input.Delay) * 1000;
                                 if (t < _wallCastT + 4000)
                                 {
                                     result.Add(ObjectManager.Player);
@@ -1439,7 +1439,7 @@ namespace LeagueSharp.Common
             foreach (var path in paths)
             {
                 var k = 1; //(MaxTime - path.Time);
-                result = result + k*(path.EndPoint - unit.ServerPosition.LSTo2D() /*path.StartPoint*/).Normalized();
+                result = result + k * (path.EndPoint - unit.ServerPosition.LSTo2D() /*path.StartPoint*/).LSNormalized();
             }
 
             result /= paths.Count;
@@ -1470,7 +1470,7 @@ namespace LeagueSharp.Common
                     if (currentPath.WaypointCount > 0)
                     {
                         distance += Math.Min(
-                            (currentPath.Time - nextPath.Time)*unit.MoveSpeed, currentPath.Path.PathLength());
+                            (currentPath.Time - nextPath.Time) * unit.MoveSpeed, currentPath.Path.LSPathLength());
                     }
                 }
 
@@ -1478,7 +1478,7 @@ namespace LeagueSharp.Common
                 var lastPath = paths.Last();
                 if (lastPath.WaypointCount > 0)
                 {
-                    distance += Math.Min(lastPath.Time*unit.MoveSpeed, lastPath.Path.PathLength());
+                    distance += Math.Min(lastPath.Time * unit.MoveSpeed, lastPath.Path.LSPathLength());
                 }
             }
             else

@@ -655,8 +655,8 @@ namespace LeagueSharp.Common
 
                     if (Math.Abs(position.Y - updatePosition.Y) > float.Epsilon)
                     {
-                        var value = (updatePosition.Distance(new Vector2(position.X, position.Y - 0x1)) <
-                                     updatePosition.Distance(new Vector2(position.X, position.Y + 0x1)))
+                        var value = (updatePosition.LSDistance(new Vector2(position.X, position.Y - 0x1)) <
+                                     updatePosition.LSDistance(new Vector2(position.X, position.Y + 0x1)))
                             ? -0x1
                             : 0x1;
                         position.Y += value;
@@ -703,8 +703,8 @@ namespace LeagueSharp.Common
 
                     if (Math.Abs(position.Y - updatePosition.Y) > float.Epsilon)
                     {
-                        var value = (updatePosition.Distance(new Vector2(position.X, position.Y - 0.5f)) <
-                                     updatePosition.Distance(new Vector2(position.X, position.Y + 0.5f)))
+                        var value = (updatePosition.LSDistance(new Vector2(position.X, position.Y - 0.5f)) <
+                                     updatePosition.LSDistance(new Vector2(position.X, position.Y + 0.5f)))
                             ? -0.5f
                             : 0.5f;
                         position.Y += value;

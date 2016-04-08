@@ -557,7 +557,7 @@ namespace LeagueSharp.Common
             }
             var angle = 0f;
             var currentPath = Player.GetWaypoints();
-            if (currentPath.Count > 1 && currentPath.PathLength() > 100)
+            if (currentPath.Count > 1 && currentPath.LSPathLength() > 100)
             {
                 var movePath = Player.GetPath(point);
 
