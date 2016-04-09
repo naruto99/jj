@@ -1,0 +1,12 @@
+C:\Users\Rexy\Desktop\TreeLib\obj\Debug\TreeLib.csprojResolveAssemblyReference.cache
+C:\Users\Rexy\Desktop\TreeLib\bin\Release\TreeLib.dll
+C:\Users\Rexy\Desktop\TreeLib\bin\Release\TreeLib.pdb
+C:\Users\Rexy\Desktop\TreeLib\bin\Release\EloBuddy.dll
+C:\Users\Rexy\Desktop\TreeLib\bin\Release\EloBuddy.SDK.dll
+C:\Users\Rexy\Desktop\TreeLib\bin\Release\Rexy.Common.dll
+C:\Users\Rexy\Desktop\TreeLib\bin\Release\SharpDX.Direct3D9.dll
+C:\Users\Rexy\Desktop\TreeLib\bin\Release\SharpDX.dll
+C:\Users\Rexy\Desktop\TreeLib\bin\Release\Newtonsoft.Json.dll
+C:\Users\Rexy\Desktop\TreeLib\bin\Release\EloBuddy.Sandbox.dll
+C:\Users\Rexy\Desktop\TreeLib\obj\Debug\TreeLib.dll
+C:\Users\Rexy\Desktop\TreeLib\obj\Debug\TreeLib.pdb
