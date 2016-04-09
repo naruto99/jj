@@ -93,28 +93,25 @@ namespace YasuoPro
                 Killsteal();
             }
 
-            if (GetKeyBind("Harass.KB") && !Fleeing)
+            if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Combo))
+            {
+                Combo();
+            }
+            if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Harass))
             {
                 Harass();
             }
-
-            switch (Orbwalker.ActiveModesFlags)
+            if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.LaneClear))
             {
-                case Orbwalker.ActiveModes.Combo:
-                    Combo();
-                    break;
-                case Orbwalker.ActiveModes.Harass:
-                    Mixed();
-                    break;
-                case Orbwalker.ActiveModes.LastHit:
-                    LhSkills();
-                    break;
-                case Orbwalker.ActiveModes.LaneClear:
-                    Waveclear();
-                    break;
-                case Orbwalker.ActiveModes.Flee:
-                    Flee();
-                    break;
+                Waveclear();
+            }
+            if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.LastHit))
+            {
+                LhSkills();
+            }
+            if (Orbwalker.ActiveModesFlags.HasFlag(Orbwalker.ActiveModes.Flee))
+            {
+                Flee();
             }
         }
 
