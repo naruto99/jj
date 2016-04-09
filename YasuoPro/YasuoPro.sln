@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YasuoPro", "YasuoPro.csproj", "{F8E64169-8FDF-4207-89D7-A4F9A426ABA9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F8E64169-8FDF-4207-89D7-A4F9A426ABA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8E64169-8FDF-4207-89D7-A4F9A426ABA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8E64169-8FDF-4207-89D7-A4F9A426ABA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8E64169-8FDF-4207-89D7-A4F9A426ABA9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
