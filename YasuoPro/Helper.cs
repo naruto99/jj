@@ -16,7 +16,7 @@ namespace YasuoPro
 
         internal static AIHeroClient Yasuo
         {
-            get { return ObjectManager.Player; }
+            get { return Player.Instance; }
         }
         public static Obj_AI_Base ETarget;
         internal static Obj_Shop shop = ObjectManager.Get<Obj_Shop>().FirstOrDefault(x => x.IsAlly);
@@ -44,12 +44,12 @@ namespace YasuoPro
 
         public static SpellSlot IgniteSlot
         {
-            get { return ObjectManager.Player.GetSpellSlotFromName("summonerdot"); }
+            get { return Yasuo.GetSpellSlotFromName("summonerdot"); }
         }
 
         private static int GetQDelay
         {
-            get { return (int) (1 - Math.Min((Player.Instance.AttackSpeedMod - 1)*0.0058552631578947, 0.6675)); }
+            get { return (int) (1 - Math.Min((Yasuo.AttackSpeedMod - 1)*0.0058552631578947, 0.6675)); }
         }
 
         private static int GetQ1Delay

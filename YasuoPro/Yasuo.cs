@@ -523,7 +523,8 @@ namespace YasuoPro
                 {
                     var minion =
                         EntityManager.MinionsAndMonsters.EnemyMinions.Where(x =>
-                            x.IsValidMinion(Q.Range) &&
+                            x.IsValidMinion(Q
+.Range) &&
                             ((x.IsDashable() &&
                               (x.Health - DamageLibrary.GetSpellDamage(Yasuo, x, SpellSlot.Q) >=
                                GetProperEDamage(x))) ||

@@ -6,8 +6,8 @@ C:\Users\Rexy\Desktop\YasuoPro\bin\Release\EloBuddy.dll
 C:\Users\Rexy\Desktop\YasuoPro\bin\Release\EloBuddy.Sandbox.dll
 C:\Users\Rexy\Desktop\YasuoPro\bin\Release\EloBuddy.SDK.dll
 C:\Users\Rexy\Desktop\YasuoPro\bin\Release\Newtonsoft.Json.dll
-C:\Users\Rexy\Desktop\YasuoPro\bin\Release\Rexy.Common.dll
 C:\Users\Rexy\Desktop\YasuoPro\bin\Release\SharpDX.Direct3D9.dll
 C:\Users\Rexy\Desktop\YasuoPro\bin\Release\SharpDX.dll
 C:\Users\Rexy\Desktop\YasuoPro\obj\Release\YasuoPro.exe
 C:\Users\Rexy\Desktop\YasuoPro\obj\Release\YasuoPro.pdb
+C:\Users\Rexy\Desktop\YasuoPro\bin\Release\Rexy.Common.dll
