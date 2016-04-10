@@ -1,0 +1,13 @@
+C:\Users\Rexy\Desktop\Rexy.Common\bin\Release\LeagueSharp.Common.dll
+C:\Users\Rexy\Desktop\Rexy.Common\bin\Release\LeagueSharp.Common.pdb
+C:\Users\Rexy\Desktop\Rexy.Common\bin\Release\EloBuddy.dll
+C:\Users\Rexy\Desktop\Rexy.Common\bin\Release\EloBuddy.Sandbox.dll
+C:\Users\Rexy\Desktop\Rexy.Common\bin\Release\EloBuddy.SDK.dll
+C:\Users\Rexy\Desktop\Rexy.Common\bin\Release\SharpDX.Direct3D9.dll
+C:\Users\Rexy\Desktop\Rexy.Common\bin\Release\SharpDX.dll
+C:\Users\Rexy\Desktop\Rexy.Common\bin\Release\Newtonsoft.Json.dll
+C:\Users\Rexy\Desktop\Rexy.Common\obj\Release\Rexy.Common.csprojResolveAssemblyReference.cache
+C:\Users\Rexy\Desktop\Rexy.Common\obj\Release\LeagueSharp.Common.Properties.Resources.resources
+C:\Users\Rexy\Desktop\Rexy.Common\obj\Release\Rexy.Common.csproj.GenerateResource.Cache
+C:\Users\Rexy\Desktop\Rexy.Common\obj\Release\LeagueSharp.Common.dll
+C:\Users\Rexy\Desktop\Rexy.Common\obj\Release\LeagueSharp.Common.pdb

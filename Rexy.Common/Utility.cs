@@ -297,6 +297,22 @@ namespace LeagueSharp.Common
         /// <summary>
         ///     Checks if this position is a wall using NavMesh
         /// </summary>
+        public static bool LSIsWall(this Vector3 position)
+        {
+            return NavMesh.GetCollisionFlags(position).HasFlag(CollisionFlags.Wall);
+        }
+
+        /// <summary>
+        ///     Checks if this position is a wall using NavMesh
+        /// </summary>
+        public static bool LSIsWall(this Vector2 position)
+        {
+            return position.To3D().LSIsWall();
+        }
+
+        /// <summary>
+        ///     Checks if this position is a wall using NavMesh
+        /// </summary>
         public static bool IsWall(this Vector3 position)
         {
             return NavMesh.GetCollisionFlags(position).HasFlag(CollisionFlags.Wall);
