@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using EloBuddy;
+using EloBuddy.SDK.Events;
 using EloBuddy.SDK.Menu;
 using EloBuddy.SDK.Menu.Values;
 using LeagueSharp.Common;
@@ -18,7 +19,7 @@ namespace TreeLib.Managers
 
         internal static void Initialize()
         {
-            CustomEvents.Game.OnGameLoad += Game_OnGameLoad;
+            Loading.OnLoadingComplete += Game_OnGameLoad;
         }
 
         private static void Game_OnGameLoad(EventArgs args)

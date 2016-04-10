@@ -9,44 +9,44 @@ namespace TreeLib.Extensions
 {
     public static class MenuExtensions
     {
-        public static void AddBool(this Menu menu, string name, string displayName, bool value = true)
+        public static void AddBool(this Menu Menu, string name, string displayName, bool value = true)
         {
-            menu.Add(name, new CheckBox(displayName, value));
+            Menu.Add(name, new CheckBox(displayName, value));
         }
 
-        public static void AddHitChance(this Menu menu, string name, string displayName, HitChance defaultHitChance)
+        public static void AddHitChance(this Menu Menu, string name, string displayName, HitChance defaultHitChance)
         {
-            menu.Add(name, new Slider(displayName, (int) defaultHitChance - 3, 0, 3));
+            Menu.Add(name, new Slider(displayName, (int) defaultHitChance - 3, 0, 3));
         }
 
-        public static void AddSlider(this Menu menu,
+        public static void AddSlider(this Menu Menu,
             string name,
             string displayName,
             int value,
             int min = 0,
             int max = 100)
         {
-            menu.Add(name, new Slider(displayName, value, min, max));
+            Menu.Add(name, new Slider(displayName, value, min, max));
         }
 
-        public static void AddInfo(this Menu menu, string text)
+        public static void AddInfo(this Menu Menu, string text)
         {
-            menu.AddLabel(text);
+            Menu.AddLabel(text);
         }
 
-        public static void AddKeyBind(this Menu menu,
+        public static void AddKeyBind(this Menu Menu,
             string name,
             string displayName,
             uint key,
             KeyBind.BindTypes type = KeyBind.BindTypes.HoldActive,
             bool defaultValue = false)
         {
-            menu.Add(name, new KeyBind(displayName, defaultValue, type, key));
+            Menu.Add(name, new KeyBind(displayName, defaultValue, type, key));
         }
 
-        public static Menu AddSpell(this Menu menu, SpellSlot spell, List<Orbwalker.ActiveModes> modes)
+        public static Menu AddSpell(this Menu Menu, SpellSlot spell, List<Orbwalker.ActiveModes> modes)
         {
-            var spellMenu = menu.AddSubMenu(spell.ToString(), spell.ToString());
+            var spellMenu = Menu.AddSubMenu(spell.ToString(), spell.ToString());
             foreach (var mode in modes)
             {
                 spellMenu.AddBool(mode.ToString() + spell, "Use in " + mode);

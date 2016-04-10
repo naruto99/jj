@@ -45,7 +45,7 @@ namespace TreeLib.Core
             High
         }
 
-        private static Menu _menu;
+        private static Menu _Menu;
 
         /// <summary>
         ///     Gets or sets the interruptable spells.
@@ -66,9 +66,9 @@ namespace TreeLib.Core
         /// <summary>
         ///     Initializes static members of the <see cref="CustomInterrupter" /> class.
         /// </summary>
-        public static void Initialize(Menu menu)
+        public static void Initialize(Menu Menu)
         {
-            _menu = menu.AddSubMenu("CustomInterrupter", "Interrupter");
+            _Menu = Menu.AddSubMenu("CustomInterrupter", "Interrupter");
 
             // Initialize Properties
             InterruptableSpells = new Dictionary<string, List<InterruptableSpell>>();
@@ -130,7 +130,7 @@ namespace TreeLib.Core
             {
                 foreach (var spell in spellList.Value)
                 {
-                    _menu.AddBool(spellList.Key + spell.Slot, spellList.Key + " " + spell.Slot);
+                    _Menu.AddBool(spellList.Key + spell.Slot, spellList.Key + " " + spell.Slot);
                 }
             }
         }

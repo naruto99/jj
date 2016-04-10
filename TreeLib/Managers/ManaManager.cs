@@ -18,7 +18,7 @@ namespace TreeLib.Managers
             None
         }
 
-        private static Menu _menu;
+        private static Menu _Menu;
 
         private static readonly Dictionary<ManaMode, Dictionary<SpellSlot, int>> ManaDictionary =
             new Dictionary<ManaMode, Dictionary<SpellSlot, int>>();
@@ -41,10 +41,10 @@ namespace TreeLib.Managers
             }
         }
 
-        public static void Initialize(Menu menu)
+        public static void Initialize(Menu Menu)
         {
-            _menu = menu.AddSubMenu("Mana Manager");
-            _menu.AddBool("Enabled", "Enabled", false);
+            _Menu = Menu.AddSubMenu("Mana Manager");
+            _Menu.AddBool("Enabled", "Enabled", false);
         }
 
         public static void SetManaCondition(this Spell spell, ManaMode mode, int value)
@@ -57,15 +57,15 @@ namespace TreeLib.Managers
             ManaDictionary[mode].Add(spell.Slot, value);
             var m = mode.ToString();
 
-            _menu.AddSubMenu(m).AddBool(m + "Enabled", "Enabled in " + m);
+            _Menu.AddSubMenu(m).AddBool(m + "Enabled", "Enabled in " + m);
 
-            _menu.AddSubMenu(m)
+            _Menu.AddSubMenu(m)
                 .AddSlider(ObjectManager.Player.ChampionName + spell.Slot + "Mana", spell.Slot + " Mana Percent", value);
         }
 
         public static bool HasManaCondition(this Spell spell)
         {
-            if (!_menu["Enabled"].Cast<CheckBox>().CurrentValue)
+            if (!_Menu["Enabled"].Cast<CheckBox>().CurrentValue)
             {
                 return false;
             }
@@ -73,7 +73,7 @@ namespace TreeLib.Managers
             var mode = CurrentMode;
 
             if (mode == ManaMode.None || !ManaDictionary.ContainsKey(mode) ||
-                !_menu[mode + "Enabled"].Cast<CheckBox>().CurrentValue)
+                !_Menu[mode + "Enabled"].Cast<CheckBox>().CurrentValue)
             {
                 return false;
             }

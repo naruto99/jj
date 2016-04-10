@@ -1,4 +1,5 @@
-﻿using LeagueSharp.Common;
+﻿using EloBuddy.SDK.Events;
+using EloBuddy.SDK.Menu;
 using TreeLib.Managers;
 using TreeLib.SpellData;
 
@@ -18,10 +19,9 @@ namespace TreeLib.Core
 
             _initialized = true;
 
-            CustomEvents.Game.OnGameLoad += args =>
+            Loading.OnLoadingComplete += args =>
             {
-                Menu = new Menu("TreeLib", "TreeLib", true);
-                Menu.AddToMainMenu();
+                Menu = MainMenu.AddMenu("TreeLib", "TreeLib");
                 SpellManager.Initialize();
                 Evade.Init();
             };

@@ -138,14 +138,14 @@ namespace TreeLib.Core
         /// </summary>
         public static List<ActiveGapcloser> ActiveGapclosers = new List<ActiveGapcloser>();
 
-        private static Menu _menu;
+        private static Menu _Menu;
 
         /// <summary>
         ///     Initializes static members of the <see cref="AntiGapcloser" /> class.
         /// </summary>
-        public static void Initialize(Menu menu)
+        public static void Initialize(Menu Menu)
         {
-            _menu = menu.AddSubMenu("CustomAntiGapcloser");
+            _Menu = Menu.AddSubMenu("CustomAntiGapcloser");
 
             #region Aatrox
 
@@ -769,7 +769,7 @@ namespace TreeLib.Core
 
             foreach (var spell in Spells)
             {
-                _menu.AddBool(spell.ChampionName + spell.Slot, spell.ChampionName + " " + spell.Slot);
+                _Menu.AddBool(spell.ChampionName + spell.Slot, spell.ChampionName + " " + spell.Slot);
             }
 
             Game.OnUpdate += Game_OnGameUpdate;

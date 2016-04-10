@@ -37,9 +37,9 @@ namespace TreeLib.Core
             get { return Color.White.ToSharpDXColor(); }
         }
 
-        public static void Initialize(Menu menu, Dictionary<SpellSlot, int[]> manaDictionary)
+        public static void Initialize(Menu Menu, Dictionary<SpellSlot, int[]> manaDictionary)
         {
-            _manaBarItem = menu.Add("ManaBarEnabled", new CheckBox("Draw Mana Indicator"));
+            _manaBarItem = Menu.Add("ManaBarEnabled", new CheckBox("Draw Mana Indicator"));
 
             Drawing.OnPreReset += DrawingOnOnPreReset;
             Drawing.OnPostReset += DrawingOnOnPostReset;
