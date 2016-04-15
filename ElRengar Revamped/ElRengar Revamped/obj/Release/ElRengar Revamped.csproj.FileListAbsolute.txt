@@ -1,0 +1,12 @@
+C:\Users\Rexy\Documents\Visual Studio 2012\Projects\ElRengar Revamped\ElRengar Revamped\bin\Release\ElRengar Revamped.exe.config
+C:\Users\Rexy\Documents\Visual Studio 2012\Projects\ElRengar Revamped\ElRengar Revamped\bin\Release\ElRengar Revamped.exe
+C:\Users\Rexy\Documents\Visual Studio 2012\Projects\ElRengar Revamped\ElRengar Revamped\bin\Release\ElRengar Revamped.pdb
+C:\Users\Rexy\Documents\Visual Studio 2012\Projects\ElRengar Revamped\ElRengar Revamped\bin\Release\EloBuddy.dll
+C:\Users\Rexy\Documents\Visual Studio 2012\Projects\ElRengar Revamped\ElRengar Revamped\bin\Release\EloBuddy.SDK.dll
+C:\Users\Rexy\Documents\Visual Studio 2012\Projects\ElRengar Revamped\ElRengar Revamped\bin\Release\SharpDX.dll
+C:\Users\Rexy\Documents\Visual Studio 2012\Projects\ElRengar Revamped\ElRengar Revamped\bin\Release\SharpDX.Direct3D9.dll
+C:\Users\Rexy\Documents\Visual Studio 2012\Projects\ElRengar Revamped\ElRengar Revamped\bin\Release\Newtonsoft.Json.dll
+C:\Users\Rexy\Documents\Visual Studio 2012\Projects\ElRengar Revamped\ElRengar Revamped\bin\Release\EloBuddy.Sandbox.dll
+C:\Users\Rexy\Documents\Visual Studio 2012\Projects\ElRengar Revamped\ElRengar Revamped\obj\Release\ElRengar Revamped.csprojResolveAssemblyReference.cache
+C:\Users\Rexy\Documents\Visual Studio 2012\Projects\ElRengar Revamped\ElRengar Revamped\obj\Release\ElRengar Revamped.exe
+C:\Users\Rexy\Documents\Visual Studio 2012\Projects\ElRengar Revamped\ElRengar Revamped\obj\Release\ElRengar Revamped.pdb

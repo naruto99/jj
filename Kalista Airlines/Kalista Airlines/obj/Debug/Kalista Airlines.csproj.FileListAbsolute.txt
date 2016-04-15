@@ -1,0 +1,12 @@
+C:\Users\Rexy\Documents\Visual Studio 2012\Projects\Kalista Airlines\Kalista Airlines\bin\Debug\Kalista Airlines.exe.config
+C:\Users\Rexy\Documents\Visual Studio 2012\Projects\Kalista Airlines\Kalista Airlines\bin\Debug\Kalista Airlines.exe
+C:\Users\Rexy\Documents\Visual Studio 2012\Projects\Kalista Airlines\Kalista Airlines\bin\Debug\Kalista Airlines.pdb
+C:\Users\Rexy\Documents\Visual Studio 2012\Projects\Kalista Airlines\Kalista Airlines\bin\Debug\EloBuddy.dll
+C:\Users\Rexy\Documents\Visual Studio 2012\Projects\Kalista Airlines\Kalista Airlines\bin\Debug\EloBuddy.SDK.dll
+C:\Users\Rexy\Documents\Visual Studio 2012\Projects\Kalista Airlines\Kalista Airlines\bin\Debug\SharpDX.dll
+C:\Users\Rexy\Documents\Visual Studio 2012\Projects\Kalista Airlines\Kalista Airlines\bin\Debug\SharpDX.Direct3D9.dll
+C:\Users\Rexy\Documents\Visual Studio 2012\Projects\Kalista Airlines\Kalista Airlines\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Rexy\Documents\Visual Studio 2012\Projects\Kalista Airlines\Kalista Airlines\bin\Debug\EloBuddy.Sandbox.dll
+C:\Users\Rexy\Documents\Visual Studio 2012\Projects\Kalista Airlines\Kalista Airlines\obj\Debug\Kalista Airlines.csprojResolveAssemblyReference.cache
+C:\Users\Rexy\Documents\Visual Studio 2012\Projects\Kalista Airlines\Kalista Airlines\obj\Debug\Kalista Airlines.exe
+C:\Users\Rexy\Documents\Visual Studio 2012\Projects\Kalista Airlines\Kalista Airlines\obj\Debug\Kalista Airlines.pdb

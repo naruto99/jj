@@ -1,0 +1,12 @@
+C:\Users\Rexy\Documents\Visual Studio 2012\Projects\ElRengar Revamped\ElRengar Revamped\bin\Debug\ElRengar Revamped.exe.config
+C:\Users\Rexy\Documents\Visual Studio 2012\Projects\ElRengar Revamped\ElRengar Revamped\bin\Debug\ElRengar Revamped.exe
+C:\Users\Rexy\Documents\Visual Studio 2012\Projects\ElRengar Revamped\ElRengar Revamped\bin\Debug\ElRengar Revamped.pdb
+C:\Users\Rexy\Documents\Visual Studio 2012\Projects\ElRengar Revamped\ElRengar Revamped\bin\Debug\EloBuddy.dll
+C:\Users\Rexy\Documents\Visual Studio 2012\Projects\ElRengar Revamped\ElRengar Revamped\bin\Debug\EloBuddy.SDK.dll
+C:\Users\Rexy\Documents\Visual Studio 2012\Projects\ElRengar Revamped\ElRengar Revamped\bin\Debug\SharpDX.dll
+C:\Users\Rexy\Documents\Visual Studio 2012\Projects\ElRengar Revamped\ElRengar Revamped\bin\Debug\SharpDX.Direct3D9.dll
+C:\Users\Rexy\Documents\Visual Studio 2012\Projects\ElRengar Revamped\ElRengar Revamped\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Rexy\Documents\Visual Studio 2012\Projects\ElRengar Revamped\ElRengar Revamped\bin\Debug\EloBuddy.Sandbox.dll
+C:\Users\Rexy\Documents\Visual Studio 2012\Projects\ElRengar Revamped\ElRengar Revamped\obj\Debug\ElRengar Revamped.csprojResolveAssemblyReference.cache
+C:\Users\Rexy\Documents\Visual Studio 2012\Projects\ElRengar Revamped\ElRengar Revamped\obj\Debug\ElRengar Revamped.exe
+C:\Users\Rexy\Documents\Visual Studio 2012\Projects\ElRengar Revamped\ElRengar Revamped\obj\Debug\ElRengar Revamped.pdb
