@@ -4,6 +4,8 @@ using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using EloBuddy;
+using EloBuddy.SDK;
+using EloBuddy.SDK.Menu;
 using SharpDX;
 using SharpDX.Direct3D9;
 using Color = SharpDX.Color;
